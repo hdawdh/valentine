@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine's Day?</title>
+    <title>Valentine's Day? ❤️</title>
     <style>
         body {
             display: flex;
@@ -13,17 +13,15 @@
             height: 100vh;
             margin: 0;
             font-family: 'Arial', sans-serif;
-            /* Added background animation */
             animation: pulseBackground 8s ease-in-out infinite;
             text-align: center;
             overflow: hidden; 
             position: relative;
         }
 
-        /* Slowly pulses the background color between pink and a soft red */
         @keyframes pulseBackground {
-            0% { background-color: #ffdae0; } /* Light Pink */
-            50% { background-color: #ffb3c1; } /* Deeper Pink/Light Red */
+            0% { background-color: #ffdae0; }
+            50% { background-color: #ffb3c1; }
             100% { background-color: #ffdae0; }
         }
 
@@ -63,7 +61,7 @@
             font-size: 1.2rem;
             border-radius: 5px;
             border: 3px solid #ff4d6d;
-            width: 60px;
+            width: 70px;
             text-align: center;
             margin-bottom: 15px;
         }
@@ -82,15 +80,23 @@
             height: 100px;
             object-fit: cover;
             clip-path: path('M50 20 C35 0 0 0 0 35 C0 60 50 100 50 100 C50 100 100 60 100 35 C100 0 65 0 50 20');
-            filter: drop-shadow(2px 0 0 #ff0000) 
-                    drop-shadow(-2px 0 0 #ff0000) 
-                    drop-shadow(0 2px 0 #ff0000) 
-                    drop-shadow(0 -2px 0 #ff0000);
+            filter: drop-shadow(2px 0 0 #ff0000) drop-shadow(-2px 0 0 #ff0000) 
+                    drop-shadow(0 2px 0 #ff0000) drop-shadow(0 -2px 0 #ff0000);
         }
 
         .decoration-heart {
             font-size: 24px;
             user-select: none;
+        }
+
+        .loop-gif {
+            width: 250px;
+            height: auto;
+            border: 5px solid #ff0000;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            z-index: 10;
+            display: block;
         }
 
         .success-gif {
@@ -110,9 +116,10 @@
 </head>
 <body>
 
+    <div id="gifContainer" style="z-index: 10;"></div>
     <h1 id="question">Will you be my Valentine? ❤️</h1>
     
-    <div id="inputContainer" class="hidden" style="z-index: 10;">
+    <div id="inputContainer" class="hidden" style="z-index: 11;">
         <input type="number" id="scaleInput" min="1" max="10" placeholder="1-10">
         <br>
         <button id="submitScale" class="yes-style">Submit</button>
@@ -129,29 +136,50 @@
             "https://i.postimg.cc/4HzXBPR0/val2.png",
             "https://i.postimg.cc/RqfCSSJM/val3.png",
             "https://i.postimg.cc/64dBYcxg/val4.png", 
-            "https://i.postimg.cc/7b7PHHJD/val5.png"
+            "https://i.postimg.cc/7b7PHHJD/val5.png",
+            "https://i.postimg.cc/MHQjh85V/val6.png",
+            "https://i.postimg.cc/dDcTFSNh/val7.png",
+            "https://i.postimg.cc/mkHF0GjN/val8.png",
+            "https://i.postimg.cc/JtCB8dYy/val9.png"
         ];
 
         const successGifUrl = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWJoa2s3Z2k3ZGUwbDh5aTQ2YXU0M2R3Z244bHNldHp3NTFkbGs1NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l2YSgsunrP27ddQje/giphy.gif";
+        
+        // This GIF shows when you hit "Uh Huh..." or "Close enough"
+        const finalPleaGifUrl = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnZhazhycGE3cGNhZWlmaHZvYzQ1OHU2d3JmdXdtM2EwNjN4bWV3dyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l0MYLePFMI1m69fpu/giphy.gif";
+
+        const loopGifs = [
+            "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWgxYnF4M2RtY25qcThrdGd3emNrdDE5dXN2dTN4M2dsaHJ2ZmdnciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oz8xLlw6GHVfokaNW/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHgyazFzZG5hNW52OGloYjJhNWJpdjJmOWs5NzIyNnMyZms1ZTVncSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Eh5trHsZEZxJKs8Pzh/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjB0MGN0OW1hZzR5Z2lwajVzc3o4NTRlZTBqNGFqODJudzZybW14diZlcD12MV9naWZzX3NlYXJjaCZjdD1n/MOYUOOoIHOj9PKN1rE/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMW82NDl1OGR3Zzc1cTYyNXZ3cWd0YXE1d3prZ2N4c2U1YjZ0ZnZ0eiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lZTnRWN0pWgG11PlCJ/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExanY5M3Awemlma2tqbTF1cjFuZHdwZHE1amdhc2wyOG5nZW15bGl2NSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/zZbf6UpZslp3nvFjIR/giphy.gif"
+        ];
 
         const loopQuestions = [
             "Are you sure?",
             "Are you positive?",
             "Are you serious right now?",
-            "Are we deadass bruh",
-            "Yo vro I'm serious"
+            "Are we deadass bruh?",
+            "Yo vro I'm serious."
         ];
 
         let loopIndex = 0;
         let state = "START"; 
 
         const question = document.getElementById('question');
+        const gifContainer = document.getElementById('gifContainer');
         const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
         const inputContainer = document.getElementById('inputContainer');
         const buttonContainer = document.getElementById('buttonContainer');
         const scaleInput = document.getElementById('scaleInput');
         const submitScale = document.getElementById('submitScale');
+
+        function updateLoopContent() {
+            gifContainer.innerHTML = `<img src="${loopGifs[loopIndex]}" class="loop-gif">`;
+            question.innerText = loopQuestions[loopIndex];
+        }
 
         function createFallingItem() {
             const isPhoto = Math.random() > 0.4;
@@ -174,6 +202,8 @@
 
         function resetToDoubleYes(message) {
             state = "DONE_ALMOST";
+            // Adds the GIF above the "Uh Huh" or "Close enough" message
+            gifContainer.innerHTML = `<img src="${finalPleaGifUrl}" class="loop-gif">`; 
             question.innerText = message + "\nWill you be my Valentine? ❤️";
             inputContainer.classList.add('hidden');
             buttonContainer.classList.remove('hidden');
@@ -184,13 +214,15 @@
         yesBtn.addEventListener('click', () => {
             if (state === "START" || state === "DONE_ALMOST") {
                 document.body.innerHTML = `
-                    <img src="${successGifUrl}" class="success-gif" alt="celebration gif">
-                    <h1 style="z-index:10">YAY! THANK YOU MY SWEET BABY GIRL! I'LL SEE YOU ON THE 14TH! 🥰</h1>
+                    <div style="z-index:10; display: flex; flex-direction: column; align-items: center;">
+                        <img src="${successGifUrl}" class="success-gif" alt="celebration gif">
+                        <h1>YAY! THANK YOU MY SWEET BABY GIRL! I'LL SEE YOU ON THE 14TH! 🥰</h1>
+                    </div>
                 `;
                 setInterval(createFallingItem, 300);
             } else if (state === "LOOPING") {
                 loopIndex = (loopIndex + 1) % loopQuestions.length;
-                question.innerText = loopQuestions[loopIndex];
+                updateLoopContent();
             }
         });
 
@@ -201,7 +233,7 @@
                 buttonContainer.classList.add('hidden');
                 inputContainer.classList.remove('hidden');
             } else if (state === "LOOPING") {
-                resetToDoubleYes("Okay, I get it...");
+                resetToDoubleYes("Uh Huh... Let's do this again,");
             } else if (state === "DONE_ALMOST") {
                 yesBtn.click();
             }
@@ -217,7 +249,7 @@
                 state = "LOOPING";
                 inputContainer.classList.add('hidden');
                 buttonContainer.classList.remove('hidden');
-                question.innerText = loopQuestions[loopIndex];
+                updateLoopContent();
             }
         });
     </script>

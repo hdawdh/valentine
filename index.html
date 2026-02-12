@@ -145,7 +145,6 @@
 
         const successGifUrl = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWJoa2s3Z2k3ZGUwbDh5aTQ2YXU0M2R3Z244bHNldHp3NTFkbGs1NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l2YSgsunrP27ddQje/giphy.gif";
         
-        // This GIF shows when you hit "Uh Huh..." or "Close enough"
         const finalPleaGifUrl = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnZhazhycGE3cGNhZWlmaHZvYzQ1OHU2d3JmdXdtM2EwNjN4bWV3dyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l0MYLePFMI1m69fpu/giphy.gif";
 
         const loopGifs = [
@@ -202,7 +201,6 @@
 
         function resetToDoubleYes(message) {
             state = "DONE_ALMOST";
-            // Adds the GIF above the "Uh Huh" or "Close enough" message
             gifContainer.innerHTML = `<img src="${finalPleaGifUrl}" class="loop-gif">`; 
             question.innerText = message + "\nWill you be my Valentine? ❤️";
             inputContainer.classList.add('hidden');
@@ -255,3 +253,4 @@
     </script>
 </body>
 </html>
+

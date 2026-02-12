@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Day?</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            /* Added background animation */
+            animation: pulseBackground 8s ease-in-out infinite;
+            text-align: center;
+            overflow: hidden; 
+            position: relative;
+        }
+
+        /* Slowly pulses the background color between pink and a soft red */
+        @keyframes pulseBackground {
+            0% { background-color: #ffdae0; } /* Light Pink */
+            50% { background-color: #ffb3c1; } /* Deeper Pink/Light Red */
+            100% { background-color: #ffdae0; }
+        }
+
+        h1 { 
+            color: #d32f2f; 
+            min-height: 1.2em; 
+            z-index: 10; 
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px 30px;
+            border-radius: 15px;
+            border: 4px solid #ff4d6d;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 80%;
+            white-space: pre-line;
+        }
+
+        .buttons { 
+            margin-top: 20px; 
+            z-index: 10; 
+        }
+
+        button {
+            padding: 10px 25px;
+            font-size: 1.2rem;
+            margin: 0 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .yes-style { background-color: #4caf50 !important; color: white !important; }
+        #noBtn { background-color: #f44336; color: white; }
+
+        input[type="number"] {
+            padding: 10px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: 3px solid #ff4d6d;
+            width: 60px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .hidden { display: none; }
+
+        .falling-item {
+            position: absolute;
+            top: -150px;
+            animation: fall-straight linear forwards;
+            z-index: 1;
+        }
+
+        .heart-photo {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            clip-path: path('M50 20 C35 0 0 0 0 35 C0 60 50 100 50 100 C50 100 100 60 100 35 C100 0 65 0 50 20');
+            filter: drop-shadow(2px 0 0 #ff0000) 
+                    drop-shadow(-2px 0 0 #ff0000) 
+                    drop-shadow(0 2px 0 #ff0000) 
+                    drop-shadow(0 -2px 0 #ff0000);
+        }
+
+        .decoration-heart {
+            font-size: 24px;
+            user-select: none;
+        }
+
+        .success-gif {
+            width: 300px;
+            height: auto; 
+            display: block;
+            margin: 0 auto 20px auto;
+            border: 5px solid #ff4d6d;
+            border-radius: 15px;
+            z-index: 10;
+        }
+
+        @keyframes fall-straight {
+            to { transform: translateY(115vh); }
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="question">Will you be my Valentine? ❤️</h1>
+    
+    <div id="inputContainer" class="hidden" style="z-index: 10;">
+        <input type="number" id="scaleInput" min="1" max="10" placeholder="1-10">
+        <br>
+        <button id="submitScale" class="yes-style">Submit</button>
+    </div>
+
+    <div id="buttonContainer" class="buttons">
+        <button id="yesBtn" class="yes-style">Yes</button>
+        <button id="noBtn">No</button>
+    </div>
+
+    <script>
+        const myPhotos = [
+            "https://i.postimg.cc/FkjhDpXG/val1.png",
+            "https://i.postimg.cc/4HzXBPR0/val2.png",
+            "https://i.postimg.cc/RqfCSSJM/val3.png",
+            "https://i.postimg.cc/64dBYcxg/val4.png", 
+            "https://i.postimg.cc/7b7PHHJD/val5.png"
+        ];
+
+        const successGifUrl = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWJoa2s3Z2k3ZGUwbDh5aTQ2YXU0M2R3Z244bHNldHp3NTFkbGs1NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l2YSgsunrP27ddQje/giphy.gif";
+
+        const loopQuestions = [
+            "Are you sure?",
+            "Are you positive?",
+            "Are you serious right now?",
+            "Are we deadass bruh",
+            "Yo vro I'm serious"
+        ];
+
+        let loopIndex = 0;
+        let state = "START"; 
+
+        const question = document.getElementById('question');
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const inputContainer = document.getElementById('inputContainer');
+        const buttonContainer = document.getElementById('buttonContainer');
+        const scaleInput = document.getElementById('scaleInput');
+        const submitScale = document.getElementById('submitScale');
+
+        function createFallingItem() {
+            const isPhoto = Math.random() > 0.4;
+            const item = document.createElement(isPhoto ? 'img' : 'div');
+            if (isPhoto) {
+                item.src = myPhotos[Math.floor(Math.random() * myPhotos.length)];
+                item.classList.add('falling-item', 'heart-photo');
+            } else {
+                item.innerText = "❤️";
+                item.classList.add('falling-item', 'decoration-heart');
+                item.style.color = ["#ff4d6d", "#ff8fa3", "#c9184a"][Math.floor(Math.random() * 3)];
+            }
+            item.style.left = Math.random() * 95 + "vw";
+            const duration = Math.random() * 4 + 4; 
+            item.style.animationDuration = duration + "s";
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), duration * 1000);
+        }
+        setInterval(createFallingItem, 600);
+
+        function resetToDoubleYes(message) {
+            state = "DONE_ALMOST";
+            question.innerText = message + "\nWill you be my Valentine? ❤️";
+            inputContainer.classList.add('hidden');
+            buttonContainer.classList.remove('hidden');
+            noBtn.innerText = "Yes";
+            noBtn.classList.add("yes-style");
+        }
+
+        yesBtn.addEventListener('click', () => {
+            if (state === "START" || state === "DONE_ALMOST") {
+                document.body.innerHTML = `
+                    <img src="${successGifUrl}" class="success-gif" alt="celebration gif">
+                    <h1 style="z-index:10">YAY! THANK YOU MY SWEET BABY GIRL! I'LL SEE YOU ON THE 14TH! 🥰</h1>
+                `;
+                setInterval(createFallingItem, 300);
+            } else if (state === "LOOPING") {
+                loopIndex = (loopIndex + 1) % loopQuestions.length;
+                question.innerText = loopQuestions[loopIndex];
+            }
+        });
+
+        noBtn.addEventListener('click', () => {
+            if (state === "START") {
+                state = "SCALE";
+                question.innerText = "On a scale of 1-10, how sure are you?";
+                buttonContainer.classList.add('hidden');
+                inputContainer.classList.remove('hidden');
+            } else if (state === "LOOPING") {
+                resetToDoubleYes("Okay, I get it...");
+            } else if (state === "DONE_ALMOST") {
+                yesBtn.click();
+            }
+        });
+
+        submitScale.addEventListener('click', () => {
+            const val = parseInt(scaleInput.value);
+            if (isNaN(val) || val < 1 || val > 10) return alert("Enter a number 1-10");
+
+            if (val <= 5) {
+                resetToDoubleYes("Eh, close enough!");
+            } else {
+                state = "LOOPING";
+                inputContainer.classList.add('hidden');
+                buttonContainer.classList.remove('hidden');
+                question.innerText = loopQuestions[loopIndex];
+            }
+        });
+    </script>
+</body>
+</html>
